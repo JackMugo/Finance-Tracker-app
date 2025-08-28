@@ -8,13 +8,31 @@
 import SwiftUI
 
 @main
-struct Finance_Tracker_appApp: App {
+struct FinanceTrackerApp: App {
     let persistenceController = PersistenceController.shared
-
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            TabView {
+                TransactionListView(
+                    viewModel: TransactionViewModel(
+                        service: TransactionService(apiClient: APIClient())
+                    )
+                )
+                .tabItem {
+                    Label("Transactions", systemImage: "list.bullet")
+                }
+
+                ExchangeRateListView(
+                    viewModel: CurrencyViewModel(
+                        service: CurrencyService(apiClient: APIClient())
+                    )
+                )
+                .tabItem {
+                    Label("Rates", systemImage: "dollarsign.circle")
+                }
+            }
         }
+        .environment(\.managedObjectContext, persistenceController.container.viewContext)
     }
 }
+
