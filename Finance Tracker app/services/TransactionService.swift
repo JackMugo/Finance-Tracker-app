@@ -5,24 +5,24 @@
 //  Created by Jackson Mugo on 28/08/2025.
 //
 
-
 import Foundation
 
 protocol TransactionServiceProtocol {
     func fetchTransactions() async throws -> [Transaction]
 }
 
-struct TransactionService: TransactionServiceProtocol {
-    private let apiClient: APIClientProtocol
-
-    init(apiClient: APIClientProtocol) {
-        self.apiClient = apiClient
-    }
-
+class TransactionService: TransactionServiceProtocol {
     func fetchTransactions() async throws -> [Transaction] {
         guard let url = URL(string: "https://tracker.free.beeceptor.com/transactions") else {
             throw URLError(.badURL)
         }
-        return try await apiClient.fetch(url)
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let transactions = try JSONDecoder().decode([Transaction].self, from: data)
+        return transactions
     }
 }
+

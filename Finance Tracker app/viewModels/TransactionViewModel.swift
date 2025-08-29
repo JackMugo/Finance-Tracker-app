@@ -33,6 +33,14 @@ class TransactionViewModel: ObservableObject {
 
     private func saveToCoreData(_ txns: [Transaction]) {
         for txn in txns {
+            // avoid duplicates
+            let fetch: NSFetchRequest<TransactionEntity> = TransactionEntity.fetchRequest()
+            fetch.predicate = NSPredicate(format: "transId == %@", txn.id)
+            
+            if let existing = try? context.fetch(fetch), existing.isEmpty == false {
+                continue // already saved
+            }
+            
             let cdTxn = TransactionEntity(context: context)
             cdTxn.transId = txn.id
             cdTxn.date = txn.date
@@ -44,6 +52,7 @@ class TransactionViewModel: ObservableObject {
             cdTxn.account = txn.account
             cdTxn.balance = txn.balance
             cdTxn.status = txn.status
+            cdTxn.isIncome = (txn.type.lowercased() == "income")
         }
         try? context.save()
     }
@@ -52,8 +61,40 @@ class TransactionViewModel: ObservableObject {
         let request: NSFetchRequest<TransactionEntity> = TransactionEntity.fetchRequest()
         if let saved = try? context.fetch(request) {
             self.transactions = saved.map {
-                Transaction(id: $0.transId ?? "", date: $0.date ?? "", description: $0.descriptionText ?? "", category: $0.category ?? "", amount: $0.amount, currency: $0.currency ?? "KES", type: $0.type ?? "", account: $0.account ?? "", balance: $0.balance, status: $0.status ?? "")
+                Transaction(
+                    id: $0.transId ?? UUID().uuidString,
+                    date: $0.date ?? "",
+                    description: $0.descriptionText ?? "",
+                    category: $0.category ?? "",
+                    amount: $0.amount,
+                    currency: $0.currency ?? "KES",
+                    type: $0.type ?? "",
+                    account: $0.account ?? "",
+                    balance: $0.balance,
+                    status: $0.status ?? ""
+                )
             }
         }
     }
+    
+    // to save a single transaction
+        func addTransaction(_ transaction: Transaction, isIncome: Bool) {
+            transactions.insert(transaction, at: 0)
+            
+            let cdTxn = TransactionEntity(context: context)
+            cdTxn.transId = transaction.id
+            cdTxn.date = transaction.date
+            cdTxn.descriptionText = transaction.description
+            cdTxn.category = transaction.category
+            cdTxn.amount = transaction.amount
+            cdTxn.currency = transaction.currency
+            cdTxn.type = transaction.type
+            cdTxn.account = transaction.account
+            cdTxn.balance = transaction.balance
+            cdTxn.status = transaction.status
+            cdTxn.isIncome = isIncome
+            
+            try? context.save()
+        }
 }
+

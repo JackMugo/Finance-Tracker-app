@@ -1,160 +1,210 @@
 //
-//  AddTransactionView.swift
+//  AddTransactionView 2.swift
 //  Finance Tracker app
 //
-//  Created by Jackson Mugo on 28/08/2025.
+//  Created by Jackson Mugo on 29/08/2025.
 //
-
 
 import SwiftUI
 
 struct AddTransactionView: View {
-    @Environment(\.dismiss) var dismiss
-    @Environment(\.managedObjectContext) private var viewContext
     
-    @State private var isIncome: Bool = false
+    @ObservedObject var viewModel: TransactionViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    @State private var selectedType: TransactionType = .income
     @State private var amount: String = ""
     @State private var date: Date = Date()
     @State private var category: String = "Transport"
-    @State private var descriptionText: String = ""
+    @State private var description: String = ""
     
-    let categories = ["Transport", "Shopping", "Healthcare", "Education", "Other"]
-
-    var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    
-                    // MARK: Transaction Type
-                    HStack {
-                        RadioButton(label: "Income", isSelected: isIncome) {
-                            isIncome = true
-                        }
-                        Spacer()
-                        RadioButton(label: "Expense", isSelected: !isIncome) {
-                            isIncome = false
-                        }
-                    }
-                    
-                    // MARK: Amount
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Amount (KES)")
-                            .font(.headline)
-                        TextField("0.00", text: $amount)
-                            .keyboardType(.decimalPad)
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
-                    }
-                    
-                    // MARK: Date
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Date")
-                            .font(.headline)
-                        DatePicker("", selection: $date, displayedComponents: [.date])
-                            .datePickerStyle(.compact)
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
-                    }
-                    
-                    // MARK: Category
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Category")
-                            .font(.headline)
-                        Picker("Select Category", selection: $category) {
-                            ForEach(categories, id: \.self) { cat in
-                                Text(cat).tag(cat)
-                            }
-                        }
-                        .pickerStyle(.menu)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
-                    }
-                    
-                    // MARK: Description
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Description")
-                            .font(.headline)
-                        TextField("Enter description...", text: $descriptionText)
-                            .padding()
-                            .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3)))
-                    }
-                    
-                    // MARK: Add Button
-                    Button(action:saveTransaction) {
-                        Text("Add Transaction")
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
-                    .padding(.top, 30)
-                    
-                }
-                .padding()
-            }
-            .navigationTitle("Add Transaction")
-            .navigationBarTitleDisplayMode(.inline)
-        }
+    enum TransactionType {
+        case income, expense
     }
     
-    func dateToString(date: Date) -> String {
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                
+                // Transaction Type Selector
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Type")
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .foregroundColor(.black)
+                    
+                    HStack(spacing: 120) {
+                        ForEach([TransactionType.income, .expense], id: \.self) { type in
+                            Button(action: { selectedType = type }) {
+                                HStack(spacing: 8) {
+                                    Circle()
+                                        .strokeBorder(type == selectedType ? Color.green : Color.gray, lineWidth: 1)
+                                        .background(Circle().fill(type == selectedType ? Color.green : Color.clear))
+                                        .frame(width: 18, height: 18)
+                                    Text(type == .income ? "Income" : "Expense")
+                                        .font(.custom("Product Sans", size: 12))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Amount Field
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 4) {
+                        Text("Amount")
+                            .font(.custom("Product Sans Medium", size: 14))
+                            .fontWeight(.medium)
+                            .foregroundColor(.black)
+                        Text("(KES)")
+                            .font(.custom("Product Sans", size: 12))
+                            .foregroundColor(Color.green)
+                    }
+                    TextField("0.00", text: $amount)
+                        .keyboardType(.decimalPad)
+                        .padding()
+                        .frame(height: 48)
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5), lineWidth: 0.5))
+                }
+                
+                // Date Picker
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Date")
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .fontWeight(.medium)
+                        .foregroundColor(.black)
+                    
+                    HStack {
+                        Text(dateFormatted)
+                            .font(.custom("Product Sans", size: 14))
+                            .foregroundColor(Color(red: 0.20, green: 0.20, blue: 0.20))
+                        Spacer()
+                        Image("DatePicker")
+                            .resizable()
+                            .frame(width: 24, height: 24)
+                    }
+                    .padding()
+                    .frame(height: 48)
+                    .background(Color(.systemGray6))
+                    .cornerRadius(8)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.5), lineWidth: 0.5)
+                    )
+                    .overlay(
+                        DatePicker("", selection: $date, displayedComponents: .date)
+                            .labelsHidden()
+                            .opacity(0.015)
+                    )
+                }
+                
+                // Category Field
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Category")
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .fontWeight(.medium)
+                        .foregroundColor(.black)
+                    TextField("Select category", text: $category)
+                        .padding()
+                        .frame(height: 48)
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .background(Color(.systemGray5))
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5), lineWidth: 0.5))
+                }
+                
+                // Description Field
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Description")
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .fontWeight(.medium)
+                        .foregroundColor(.black)
+                    TextField("Add description", text: $description)
+                        .padding()
+                        .frame(height: 48)
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .background(Color(.systemGray6))
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.5), lineWidth: 0.5))
+                }
+                
+                // Add Transaction Button
+                Button(action: addTransaction) {
+                    Text("Add Transaction")
+                        .font(.custom("Product Sans Medium", size: 14))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color(red: 0.40, green: 0.58, blue: 0.12))
+                        .cornerRadius(8)
+                }
+                
+                Spacer(minLength: 24)
+            }
+            .padding(16)
+        }
+        
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            // Custom Back Button
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    Image("ArrowBack")
+                        .foregroundColor(.black)
+                        .imageScale(.medium)
+                }
+            }
+            
+            // Left-Aligned Title
+            ToolbarItem(placement: .principal) {
+                HStack {
+                    Text("Add Transaction")
+                        .font(.custom("Product Sans Medium", size: 20))
+                        .fontWeight(.bold)
+                        .foregroundColor(.black)
+                    Spacer() // Pushes title to the left
+                }
+            }
+        }
+        
+        .background(Color(red: 0.95, green: 0.95, blue: 0.95).edgesIgnoringSafeArea(.all))
+    }
+    
+    var dateFormatted: String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium   // e.g. "Aug 28, 2025"
-        formatter.timeStyle = .short    // e.g. "7:35 PM"
+        formatter.dateFormat = "dd/MM/yyyy"
         return formatter.string(from: date)
     }
     
-    private func saveTransaction() {
-        let newTx = TransactionEntity(context: viewContext)
-        newTx.id = UUID()
-        newTx.amount = Double(amount) ?? 0
-        newTx.date = dateToString(date: date)
-        newTx.category = category
-        newTx.descriptionText = descriptionText
-        newTx.isIncome = isIncome
+    private func addTransaction() {
+        guard let amt = Double(amount) else { return }
+        let newTransaction = Transaction(
+            id: UUID().uuidString,
+            date: dateFormatted,
+            description: description,
+            category: category,
+            amount: amt,
+            currency: "KES",
+            type: selectedType == .income ? "income" : "expense",
+            account: "Default",
+            balance: 0,
+            status: "completed"
+        )
         
-        do {
-            try viewContext.save()
-            print("✅ Transaction saved!")
-            dismiss()
-        } catch {
-            print("❌ Failed to save transaction: \(error.localizedDescription)")
+        viewModel.addTransaction(newTransaction, isIncome: selectedType == .income)
+        dismiss()
+    }
+}
+
+struct AddTransactionView_Previews: PreviewProvider {
+    static var previews: some View {
+        NavigationStack {
+            AddTransactionView(viewModel: TransactionViewModel(service: TransactionService()))
         }
     }
-    
 }
-
-// MARK: - Custom Radio Button
-struct RadioButton: View {
-    var label: String
-    var isSelected: Bool
-    var action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Circle()
-                    .stroke(isSelected ? Color.green : Color.gray, lineWidth: 2)
-                    .frame(width: 20, height: 20)
-                    .overlay(
-                        Circle()
-                            .fill(isSelected ? Color.green : Color.clear)
-                            .frame(width: 12, height: 12)
-                    )
-                Text(label)
-                    .foregroundColor(.primary)
-            }
-        }
-    }
-    
-    
-}
-
-#Preview {
-    AddTransactionView()
-}
-
-
 
