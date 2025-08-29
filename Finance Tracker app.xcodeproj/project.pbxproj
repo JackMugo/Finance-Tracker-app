@@ -6,17 +6,37 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		F6A251482E6139E5003DCA1B /* SwiftLintFramework in Frameworks */ = {isa = PBXBuildFile; productRef = F6A251472E6139E5003DCA1B /* SwiftLintFramework */; };
-/* End PBXBuildFile section */
-
 /* Begin PBXFileReference section */
 		F68508F92E609843009577DF /* Finance Tracker app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Finance Tracker app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F6A2514B2E613B96003DCA1B /* Exceptions for "Finance Tracker app" folder in "Finance Tracker app" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				utilities/PDFReceiptGenerator.swift,
+			);
+			target = F68508F82E609843009577DF /* Finance Tracker app */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		F6A2514C2E613B96003DCA1B /* Exceptions for "Finance Tracker app" folder in "Copy Bundle Resources" phase from "Finance Tracker app" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = F68508F72E609843009577DF /* Resources */;
+			membershipExceptions = (
+				utilities/PDFReceiptGenerator.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		F68508FB2E609843009577DF /* Finance Tracker app */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F6A2514B2E613B96003DCA1B /* Exceptions for "Finance Tracker app" folder in "Finance Tracker app" target */,
+				F6A2514C2E613B96003DCA1B /* Exceptions for "Finance Tracker app" folder in "Copy Bundle Resources" phase from "Finance Tracker app" target */,
+			);
 			path = "Finance Tracker app";
 			sourceTree = "<group>";
 		};
@@ -27,7 +47,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F6A251482E6139E5003DCA1B /* SwiftLintFramework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +89,6 @@
 			);
 			name = "Finance Tracker app";
 			packageProductDependencies = (
-				F6A251472E6139E5003DCA1B /* SwiftLintFramework */,
 			);
 			productName = "Finance Tracker app";
 			productReference = F68508F92E609843009577DF /* Finance Tracker app.app */;
@@ -101,7 +119,7 @@
 			mainGroup = F68508F02E609843009577DF;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				F6A251462E6139E5003DCA1B /* XCRemoteSwiftPackageReference "SwiftLint" */,
+				F6A251842E617745003DCA1B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F68508FA2E609843009577DF /* Products */;
@@ -268,6 +286,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -296,6 +315,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -333,23 +353,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F6A251462E6139E5003DCA1B /* XCRemoteSwiftPackageReference "SwiftLint" */ = {
+		F6A251842E617745003DCA1B /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/SwiftLint";
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.59.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		F6A251472E6139E5003DCA1B /* SwiftLintFramework */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F6A251462E6139E5003DCA1B /* XCRemoteSwiftPackageReference "SwiftLint" */;
-			productName = SwiftLintFramework;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F68508F12E609843009577DF /* Project object */;
 }
